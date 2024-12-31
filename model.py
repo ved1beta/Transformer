@@ -11,3 +11,11 @@ class InputEmbeddings(nn.Module):
     def forward(self, x):
         return self.embeddings(x) * math.sqrt(self.d_model)
         
+class PositionalEncoding(nn.Model):
+    def __init__(self, d_model:int, seq_length:int,dropout:float ) -> None:
+        super.__init__()
+        self.d_model =d_model
+        self.seq_length = seq_length
+        self.dropout = nn.Dropout(dropout)
+
+        pe = torch.zeros(d_model, )
