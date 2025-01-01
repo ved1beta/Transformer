@@ -48,3 +48,15 @@ class LayerNormalization(nn.Module):
         std = x.std(dim = -1, keepdim = True)
 
         return self.alpha * (x-mean)/ (std + self.esp) + self.bias
+    
+    def __init__(self, d_model: int , d_ff:int ,  dropout:float)-> float:
+        super().__init__()
+        # (xW1 + B)W2+ B2
+        self.liner1 = nn.Linear(d_model, d_ff) # 
+        self.dropout = nn.Dropout(dropout)
+        self.liner2 = nn.Linear(d_ff, d_model)
+
+    def forward(self, x):
+        return self.liner2(self.dropout(torch.relu(self.liner1(x))))
+
+
