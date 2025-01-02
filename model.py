@@ -11,7 +11,7 @@ class InputEmbeddings(nn.Module):
     def forward(self, x):
         return self.embeddings(x) * math.sqrt(self.d_model)
         
-class PositionalEncoding(nn.Model):
+class PositionalEncoding(nn.Module):
     def __init__(self, d_model:int, seq_length:int,dropout:float ) -> None:
         super.__init__()
         self.d_model =d_model
@@ -146,7 +146,7 @@ class DecoderBlock(nn.Module):
         self.self_attention_block = self_attention_block
         self.feed_forward_block = feed_forward_block
         self.cross_attention_block = cross_attention_block
-        self.residual_connections = nn.Module([ResidualConnection(dropout)for _ in range(3)])
+        self.residual_connections = nn.ModuleList([ResidualConnection(dropout)for _ in range(3)])
 
     def forward(self, x, encoder_output, src_mask, tgt_mask ):
         x = self.residual_connections[0](x, lambda x:self.self_attention_block(x,x,x, tgt_mask ))
@@ -168,13 +168,13 @@ class Decoder(nn.Module):
 
 class ProjectionLayer(nn.Module):
 
-    def __init__(self, d_model, vocab_size) -> None:
+    def __init__(self, d_model:int, vocab_size:int) -> None:
         super().__init__()
         self.proj = nn.Linear(d_model, vocab_size)
 
     def forward(self, x) -> None:
         # (batch, seq_len, d_model) --> (batch, seq_len, vocab_size)
-        return self.proj(x)
+        return torch.log_softmax(self.proj(x), dim = -1)
     
 class Transformer(nn.Module):    
 
@@ -237,7 +237,11 @@ def build_transformer(src_vocab_size : int , tgt_vocab_size :int,src_seq_len :in
         if p.dim() > 1 :
             nn.init.xavier_uniform_(p)
 
-    return transformer 
+    return transformer
+
+
+
+          
 
 
 
